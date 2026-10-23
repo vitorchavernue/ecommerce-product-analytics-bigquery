@@ -56,6 +56,10 @@ jobs:
         if: steps.check.outputs.ready == 'true'
         run: make bigquery
 
+      - name: Show dbt results on the run page
+        if: always() && steps.check.outputs.ready == 'true'
+        run: python scripts/ci_annotations.py results dbt/target/run_results.json
+
       - name: dbt docs (catalog and lineage)
         if: steps.check.outputs.ready == 'true'
         run: cd dbt && dbt docs generate --profiles-dir . --target bigquery
@@ -63,6 +67,10 @@ jobs:
       - name: Findings report (real data)
         if: steps.check.outputs.ready == 'true'
         run: make bigquery-report
+
+      - name: Show the findings on the run page
+        if: steps.check.outputs.ready == 'true'
+        run: python scripts/ci_annotations.py report docs/findings.md
 
       - name: Upload report, run results and docs
         if: always() && steps.check.outputs.ready == 'true'
