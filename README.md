@@ -53,7 +53,7 @@ $307,640 revenue** (store conversion **1.35%**, 95% interval 1.31% – 1.38%; av
 | **Referral and email beat the paid channels** | Referral converts **2.15%** (1.59× the store, 70k sessions) and email **11.7%** (small volume); **Paid Search converts only 0.39%** and Direct 0.51% — both significantly below the store |
 | **The holiday season almost triples sales** | Black Friday to mid-December: **$7,030 per day vs $2,447** in the rest of the period (+187%) and conversion 1.94% vs 1.16% (p < 1e-16) |
 | **Mobile is not the problem** | Desktop 1.32% vs mobile 1.39%: statistically significant only at the edge (p = 0.050) and too small to matter |
-| **A small group of customers at risk holds a large share of revenue** | "At risk – high value" customers are **15.5%** of buyers but **27.9%** of revenue (last order 67 days ago on average); Champions + Loyal are 2.8% of buyers with 4+ orders each |
+| **A small group of customers at risk holds a large share of revenue** | "At risk – high value" customers are **15.5%** of buyers but **27.9%** of revenue (last order 67 days ago on average); Champions + Loyal are 2.8% of buyers, with more than 4 orders on average |
 | **Popular products with weak conversion** | "YouTube Icon Tee Grey": 14,205 viewing sessions but only **16.2%** add it to the cart (hoodies and sweatshirts reach 24–31%) |
 | **Raw data would overstate revenue** | 906 purchases (16%) have no transaction id and 335 purchase events are duplicates — both handled before any number is reported |
 
