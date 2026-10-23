@@ -14,6 +14,17 @@ Google Merchandise Store (public BigQuery dataset, Nov 2020 – Jan 2021):
 - **CI** running the whole project on a synthetic GA4-shaped sample (DuckDB) at every push, plus a **weekly
   scheduled run on BigQuery** — all on the free BigQuery sandbox (no credit card)
 
+**📊 Live dashboard:** [Looker Studio report](https://lookerstudio.google.com/reporting/2005265e-abff-4477-a0c3-f4f0acebb038)
+
+| Page | What it answers |
+|---|---|
+| **Overview** | Sessions, orders, revenue and conversion over time, by channel and device |
+| **Purchase funnel** | Where shoppers drop off between product view and purchase (closed funnel), by device |
+| **Channels & segments** | Which channels, devices, visitor types and continents convert above or below the store average, with 95% confidence intervals |
+| **Retention** | Weekly cohorts: share of new users still active 1, 2, 4 and 8 weeks later, plus the cohort heatmap |
+| **Customers (RFM)** | Customer segments by recency, frequency and value, their share of revenue and the recommended action |
+| **Products** | Revenue by category, view-to-cart and cart-to-order conversion, product ranking |
+
 ---
 
 ## 🎯 Business problem
