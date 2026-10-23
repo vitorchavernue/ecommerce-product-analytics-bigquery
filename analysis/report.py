@@ -124,9 +124,11 @@ def build_report(wh: Warehouse) -> str:
     if {"desktop", "mobile"} <= set(dev.index):
         t = two_proportion_test(int(dev.loc["desktop", "converted_sessions"]), int(dev.loc["desktop", "sessions"]),
                                 int(dev.loc["mobile", "converted_sessions"]), int(dev.loc["mobile", "sessions"]))
+        lift = relative_lift(t.rate_b, t.rate_a)
+        verdict = ("not significant" if not t.significant
+                   else "statistically significant but too small to matter" if abs(lift) < 10 else "significant")
         lines.append(f"- **Desktop converts {pct(t.rate_a)} vs {pct(t.rate_b)} on mobile** "
-                     f"({relative_lift(t.rate_b, t.rate_a):+.0f}% on mobile; z = {t.z:.1f}, {pval(t.p_value)}"
-                     f"{', significant' if t.significant else ', not significant'}).")
+                     f"({lift:+.0f}% on mobile; z = {t.z:.1f}, {pval(t.p_value)}: {verdict}).")
     vis = seg[seg.dimension == "visitor_type"].set_index("segment")
     if {"New", "Returning"} <= set(vis.index):
         t = two_proportion_test(int(vis.loc["Returning", "converted_sessions"]), int(vis.loc["Returning", "sessions"]),
