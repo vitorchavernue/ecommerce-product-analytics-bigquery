@@ -209,10 +209,10 @@ def build_report(wh: Warehouse) -> str:
         "Duplicated purchase events removed": num(q.purchase_events - q.purchases_without_id - q.distinct_orders),
         "Orders": num(q.distinct_orders)}]))]
     it = wh.query(f"""
-        select count(*) product_rows, sum(case when item_id is null then 1 else 0 end) without_id
-        from {stg('stg_ga4__items')} where event_name = 'purchase'""").iloc[0]
-    out += ["", f"- Products inside purchases: {num(it.product_rows)} rows, {pct(it.without_id / max(it.product_rows, 1), 1)} "
-            "without a product id, so products are identified by name."]
+        select count(*) products, sum(case when ids > 1 then 1 else 0 end) multi_id
+        from (select item_name, count(distinct item_id) ids from {stg('stg_ga4__items')} group by item_name)""").iloc[0]
+    out += ["", f"- {num(it.multi_id)} of {num(it.products)} product names appear with more than one product id across "
+            "events, so products are identified by name."]
 
     lo, hi = wilson_interval(int(k.purchase_sessions), int(k.sessions))
     out += ["", f"_Store conversion {pct(conv)} (95% interval {pct(lo)} – {pct(hi)})._", ""]
