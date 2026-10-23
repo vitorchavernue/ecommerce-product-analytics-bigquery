@@ -22,6 +22,7 @@ per_user as (
     select
         user_pseudo_id,
         min(session_start_ts)                                       as first_session_ts,
+        min(session_date)                                           as first_session_date,
         max(session_start_ts)                                       as last_session_ts,
         {{ first_value_by('device_category', 'session_start_ts') }} as first_device_category,
         {{ first_value_by('country', 'session_start_ts') }}         as first_country,
@@ -40,7 +41,8 @@ per_user as (
 select
     p.*,
     f.first_touch_ts,
-    cast(coalesce(f.first_touch_ts, p.first_session_ts) as date)                            as first_seen_date,
+    -- first day seen in the data (same calendar as the event dates, so week 0 of a cohort is always 100%)
+    p.first_session_date                                                                    as first_seen_date,
     -- a "new user" is someone whose first ever visit happened inside the analysis window
     cast(coalesce(f.first_touch_ts, p.first_session_ts) as date)
         >= {{ parse_yyyymmdd("'" ~ var('start_date') ~ "'") }}                               as is_new_in_window,
