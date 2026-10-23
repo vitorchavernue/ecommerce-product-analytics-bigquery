@@ -25,6 +25,16 @@ Google Merchandise Store (public BigQuery dataset, Nov 2020 – Jan 2021):
 | **Customers (RFM)** | Customer segments by recency, frequency and value, their share of revenue and the recommended action |
 | **Products** | Revenue by category, view-to-cart and cart-to-order conversion, product ranking |
 
+![Dashboard overview](docs/images/dashboard-1-overview.png)
+
+| Purchase funnel | Channels & segments |
+|---|---|
+| ![Purchase funnel](docs/images/dashboard-2-funnel.png) | ![Channels and segments](docs/images/dashboard-3-channels.png) |
+| **Retention** | **Customers (RFM)** |
+| ![Retention](docs/images/dashboard-4-retention.png) | ![Customers RFM](docs/images/dashboard-5-customers-rfm.png) |
+| **Products** | |
+| ![Products](docs/images/dashboard-6-products.png) | |
+
 ---
 
 ## 🎯 Business problem
