@@ -53,7 +53,7 @@ models:
         data_tests: [unique, not_null]
 
   - name: dim_items
-    description: Products as seen in the events (latest name and category).
+    description: Products as seen in the events, one row per product name (latest id and category).
     columns:
-      - name: item_id
+      - name: item_name
         data_tests: [unique, not_null]

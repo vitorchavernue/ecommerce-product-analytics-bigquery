@@ -18,7 +18,7 @@ models:
   - name: stg_ga4__items
     description: One row per product inside each shopping event (view, cart, checkout, purchase).
     columns:
-      - name: item_id
+      - name: item_name
         data_tests: [not_null]
       - name: quantity
         data_tests: [not_null]

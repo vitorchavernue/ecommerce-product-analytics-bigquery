@@ -65,7 +65,9 @@ def num(x: float) -> str:
 
 
 def pval(p: float) -> str:
-    return "p < 1e-16" if p < 1e-16 else f"p = {p:.1e}"
+    if p < 1e-16:
+        return "p < 1e-16"
+    return f"p = {p:.1e}" if p < 0.001 else f"p = {p:.3f}"
 
 
 def md_table(df: pd.DataFrame) -> str:
@@ -204,6 +206,11 @@ def build_report(wh: Warehouse) -> str:
         "Purchase events": num(q.purchase_events), "Purchases without transaction id (excluded)": num(q.purchases_without_id),
         "Duplicated purchase events removed": num(q.purchase_events - q.purchases_without_id - q.distinct_orders),
         "Orders": num(q.distinct_orders)}]))]
+    it = wh.query(f"""
+        select count(*) product_rows, sum(case when item_id is null then 1 else 0 end) without_id
+        from {stg('stg_ga4__items')} where event_name = 'purchase'""").iloc[0]
+    out += ["", f"- Products inside purchases: {num(it.product_rows)} rows, {pct(it.without_id / max(it.product_rows, 1), 1)} "
+            "without a product id, so products are identified by name."]
 
     lo, hi = wilson_interval(int(k.purchase_sessions), int(k.sessions))
     out += ["", f"_Store conversion {pct(conv)} (95% interval {pct(lo)} – {pct(hi)})._", ""]

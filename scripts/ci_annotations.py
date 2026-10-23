@@ -39,9 +39,18 @@ def results(path: Path) -> None:
     print(f"::notice title=dbt totals::{escape(', '.join(f'{k}={v}' for k, v in sorted(totals.items())))}")
 
 
-def report(path: Path) -> None:
-    # the whole findings report in one notice (GitHub accepts long annotation messages)
-    print(f"::notice title=findings report::{escape(path.read_text(encoding='utf-8')[:60000])}")
+def report(path: Path, chunk_size: int = 3500) -> None:
+    # GitHub shows about 4,000 characters per annotation: split the report at section breaks
+    chunks, current = [], ""
+    for block in path.read_text(encoding="utf-8").split("\n## "):
+        block = block if not chunks and not current else "## " + block
+        if current and len(current) + len(block) > chunk_size:
+            chunks.append(current)
+            current = ""
+        current += ("\n" if current else "") + block
+    chunks.append(current)
+    for i, chunk in enumerate(chunks[:9], start=1):
+        print(f"::notice title=findings report ({i}/{len(chunks)})::{escape(chunk)}")
 
 
 if __name__ == "__main__":

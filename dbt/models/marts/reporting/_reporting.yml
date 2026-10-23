@@ -31,5 +31,5 @@ models:
   - name: rpt_product_performance
     description: Views, cart additions, orders and revenue per product, with cart and purchase rates.
     columns:
-      - name: item_id
+      - name: item_name
         data_tests: [unique, not_null]

@@ -14,29 +14,29 @@ with items as (
 funnel as (
 
     select
-        item_id,
+        item_name,
         count(distinct case when event_name = 'view_item' then session_key end)    as view_sessions,
         count(distinct case when event_name = 'add_to_cart' then session_key end)  as cart_sessions
     from items
-    group by item_id
+    group by item_name
 
 ),
 
 sales as (
 
     select
-        item_id,
+        item_name,
         count(distinct transaction_id)      as orders,
         sum(quantity)                       as units_sold,
         sum(item_revenue_usd)               as revenue_usd
     from {{ ref('fct_order_items') }}
-    group by item_id
+    group by item_name
 
 )
 
 select
-    d.item_id,
     d.item_name,
+    d.item_id,
     d.item_category,
     coalesce(f.view_sessions, 0)                                    as view_sessions,
     coalesce(f.cart_sessions, 0)                                    as cart_sessions,
@@ -47,5 +47,5 @@ select
     {{ safe_div('s.orders', 'f.cart_sessions') }}                   as purchase_rate,
     {{ safe_div('s.revenue_usd', 'f.view_sessions') }}              as revenue_per_view_session
 from {{ ref('dim_items') }} as d
-left join funnel as f on f.item_id = d.item_id
-left join sales as s on s.item_id = d.item_id
+left join funnel as f on f.item_name = d.item_name
+left join sales as s on s.item_name = d.item_name

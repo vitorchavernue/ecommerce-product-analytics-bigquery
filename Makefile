@@ -24,7 +24,7 @@ dbt:
 
 # BigQuery version of every model, compiled and parsed offline (no Google account needed)
 bq-syntax:
-	cd dbt && dbt compile --profiles-dir . --target local --vars '{render_bigquery_sql: true}' --target-path target_bq -q
+	cd dbt && rm -rf target_bq && dbt compile --profiles-dir . --target local --vars '{render_bigquery_sql: true}' --target-path target_bq -q
 	$(PY) scripts/check_bigquery_sql.py dbt/target_bq/compiled
 
 report:
