@@ -1,0 +1,24 @@
+# Two targets share the same models:
+#   local    -> DuckDB over the synthetic GA4-shaped Parquet files (laptop / CI, no account needed)
+#   bigquery -> the real GA4 public dataset; credentials come from Application Default Credentials
+#               (GOOGLE_APPLICATION_CREDENTIALS in GitHub Actions, or `gcloud auth application-default login`)
+ga4_product_analytics:
+  target: "{{ env_var('DBT_TARGET', 'local') }}"
+  outputs:
+    local:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH', '../data/warehouse.duckdb') }}"
+      schema: main
+      threads: 4
+
+    bigquery:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('GCP_PROJECT_ID', 'your-project-id') }}"
+      dataset: ga4_dbt
+      location: US                     # same region as the public dataset
+      threads: 4
+      job_execution_timeout_seconds: 600
+      job_retries: 2
+      maximum_bytes_billed: 20000000000  # cost guardrail: no single query may scan more than 20 GB
+      priority: interactive

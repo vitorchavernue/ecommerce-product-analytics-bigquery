@@ -1,0 +1,59 @@
+version: 2
+
+models:
+  - name: fct_sessions
+    description: Visits with channel, device, engagement, open and closed purchase funnel, orders and revenue.
+    columns:
+      - name: session_key
+        description: User id + GA session id.
+        data_tests: [unique, not_null]
+      - name: user_pseudo_id
+        data_tests:
+          - not_null
+          - relationships:
+              to: ref('dim_users')
+              field: user_pseudo_id
+      - name: channel
+        description: Marketing channel of the visit (simplified GA4 default channel grouping).
+        data_tests:
+          - accepted_values:
+              values: ['Direct', 'Organic Search', 'Paid Search', 'Display', 'Email', 'Affiliates',
+                       'Referral', 'Other', 'Unattributed']
+      - name: visitor_type
+        data_tests:
+          - accepted_values:
+              values: ['New', 'Returning']
+
+  - name: fct_orders
+    description: One row per order (deduplicated), with the context of the visit.
+    columns:
+      - name: transaction_id
+        data_tests: [unique, not_null]
+      - name: revenue_usd
+        data_tests: [not_null]
+      - name: user_pseudo_id
+        data_tests:
+          - relationships:
+              to: ref('dim_users')
+              field: user_pseudo_id
+
+  - name: fct_order_items
+    description: Products inside each order (same deduplication rule as fct_orders).
+    columns:
+      - name: transaction_id
+        data_tests:
+          - relationships:
+              to: ref('fct_orders')
+              field: transaction_id
+
+  - name: dim_users
+    description: Users with acquisition channel, first device and country, lifetime totals.
+    columns:
+      - name: user_pseudo_id
+        data_tests: [unique, not_null]
+
+  - name: dim_items
+    description: Products as seen in the events (latest name and category).
+    columns:
+      - name: item_id
+        data_tests: [unique, not_null]

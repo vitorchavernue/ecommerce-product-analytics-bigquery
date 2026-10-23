@@ -1,0 +1,39 @@
+# GA4 product analytics: the same models run on BigQuery (production) and DuckDB (laptop / CI).
+name: ga4_product_analytics
+version: "1.0.0"
+config-version: 2
+profile: ga4_product_analytics
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  # analysis window of the public GA4 sample (Google Merchandise Store)
+  start_date: "20201101"
+  end_date: "20210131"
+  # RFM is measured on the day after the last day of data
+  rfm_reference_date: "2021-02-01"
+  # retention is followed for 12 weeks after the first visit
+  retention_weeks: 12
+
+models:
+  ga4_product_analytics:
+    staging:
+      +schema: ga4_staging
+      +materialized: table
+    intermediate:
+      +schema: ga4_staging
+      +materialized: table
+    marts:
+      +materialized: table
+      core:
+        +schema: ga4_core
+      reporting:
+        +schema: ga4_reporting
+
+data_tests:
+  ga4_product_analytics:
+    +severity: error

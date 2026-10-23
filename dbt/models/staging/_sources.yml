@@ -1,0 +1,16 @@
+version: 2
+
+sources:
+  - name: ga4
+    description: >
+      Google Analytics 4 export of the Google Merchandise Store (public, obfuscated sample),
+      one table per day (events_YYYYMMDD), Nov 2020 - Jan 2021.
+      In CI the same structure is read from synthetic Parquet files (scripts/generate_sample_data.py).
+    database: "{{ 'bigquery-public-data' if (target.type == 'bigquery' or var('render_bigquery_sql', false)) else none }}"
+    schema: "{{ 'ga4_obfuscated_sample_ecommerce' if (target.type == 'bigquery' or var('render_bigquery_sql', false)) else 'main' }}"
+    tables:
+      - name: events
+        identifier: "{{ 'events_*' if (target.type == 'bigquery' or var('render_bigquery_sql', false)) else 'events' }}"
+        meta:
+          external_location: "read_parquet('{{ env_var('GA4_SAMPLE_PATH', '../data/ga4_sample') }}/events_*.parquet')"
+        description: One row per event (page view, product view, add to cart, purchase...).

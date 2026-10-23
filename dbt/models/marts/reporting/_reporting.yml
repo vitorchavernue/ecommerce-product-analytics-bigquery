@@ -1,0 +1,35 @@
+version: 2
+
+# Flat tables read directly by Looker Studio.
+models:
+  - name: rpt_daily_kpis
+    description: Daily additive KPIs by channel, device, visitor type and country.
+  - name: rpt_funnel
+    description: Closed purchase funnel in long format (one row per step).
+    columns:
+      - name: step_name
+        data_tests:
+          - accepted_values:
+              values: ['1. Product view', '2. Add to cart', '3. Begin checkout', '4. Shipping info',
+                       '5. Payment info', '6. Purchase']
+  - name: rpt_segment_conversion
+    description: Conversion per segment with 95% Wilson interval and a z test against the rest of the store.
+  - name: rpt_cohort_retention
+    description: Weekly retention of new users by first-visit cohort.
+  - name: rpt_rfm_customers
+    description: RFM scores and segment of every customer.
+    columns:
+      - name: user_pseudo_id
+        data_tests: [unique, not_null]
+      - name: rfm_segment
+        data_tests:
+          - accepted_values:
+              values: ['Champions', 'Loyal customers', 'Big first purchase', 'New customers', 'Potential loyalists',
+                       'At risk - high value', 'At risk', 'Hibernating']
+  - name: rpt_rfm_segments
+    description: Customers, revenue and behaviour per RFM segment.
+  - name: rpt_product_performance
+    description: Views, cart additions, orders and revenue per product, with cart and purchase rates.
+    columns:
+      - name: item_id
+        data_tests: [unique, not_null]

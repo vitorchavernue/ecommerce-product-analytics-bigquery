@@ -1,0 +1,16 @@
+data/
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+logs/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+# never commit credentials
+*.json.key
+gcp-key*.json
+service-account*.json
+.env
+dbt/target_bq/

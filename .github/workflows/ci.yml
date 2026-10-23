@@ -1,0 +1,46 @@
+name: ci
+
+# Every push: the full pipeline runs on a synthetic GA4-shaped sample (DuckDB), and the BigQuery
+# version of every model is compiled and syntax-checked. No cloud account is needed.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Lint
+        run: make lint
+
+      - name: Unit tests
+        run: make test
+
+      - name: Generate the synthetic GA4 sample
+        run: make sample
+
+      - name: dbt build on DuckDB (models + data tests)
+        run: make dbt
+
+      - name: BigQuery SQL check (compile + parse every model)
+        run: make bq-syntax
+
+      - name: Findings report (sample data)
+        run: make report
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: findings-sample-data
+          path: data/findings_local.md

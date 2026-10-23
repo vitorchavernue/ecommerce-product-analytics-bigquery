@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: stg_ga4__events
+    description: One row per event, with the nested GA4 fields flattened into typed columns.
+    columns:
+      - name: event_date
+        data_tests: [not_null]
+      - name: event_name
+        data_tests: [not_null]
+      - name: user_pseudo_id
+        data_tests: [not_null]
+      - name: device_category
+        data_tests:
+          - accepted_values:
+              values: ['desktop', 'mobile', 'tablet', 'smart tv']
+
+  - name: stg_ga4__items
+    description: One row per product inside each shopping event (view, cart, checkout, purchase).
+    columns:
+      - name: item_id
+        data_tests: [not_null]
+      - name: quantity
+        data_tests: [not_null]

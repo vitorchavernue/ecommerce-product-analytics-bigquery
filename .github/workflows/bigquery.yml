@@ -1,0 +1,77 @@
+name: bigquery
+
+# Production run on the real GA4 public dataset.
+# - manual (Run workflow), every Monday, and on every change to the dbt project
+# - the weekly run also renews the tables: in the BigQuery sandbox tables expire after 60 days,
+#   so the Looker Studio dashboard never runs out of data
+# Needs two repository secrets: GCP_SA_KEY (service account key, JSON) and GCP_PROJECT_ID.
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 6 * * 1"
+  push:
+    branches: [main]
+    paths: ["dbt/**", "analysis/**", ".github/workflows/bigquery.yml"]
+
+concurrency:
+  group: bigquery
+  cancel-in-progress: false
+
+jobs:
+  dbt-bigquery:
+    runs-on: ubuntu-latest
+    env:
+      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      DBT_SEND_ANONYMOUS_USAGE_STATS: "false"
+    steps:
+      - name: Skip when the BigQuery secrets are not configured
+        id: check
+        run: |
+          if [ -z "${{ secrets.GCP_SA_KEY }}" ] || [ -z "$GCP_PROJECT_ID" ]; then
+            echo "BigQuery secrets not set: skipping"; echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.check.outputs.ready == 'true'
+
+      - uses: actions/setup-python@v5
+        if: steps.check.outputs.ready == 'true'
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        if: steps.check.outputs.ready == 'true'
+        run: pip install -r requirements.txt
+
+      - name: Authenticate to Google Cloud
+        if: steps.check.outputs.ready == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: dbt build on BigQuery (models + data tests)
+        if: steps.check.outputs.ready == 'true'
+        run: make bigquery
+
+      - name: dbt docs (catalog and lineage)
+        if: steps.check.outputs.ready == 'true'
+        run: cd dbt && dbt docs generate --profiles-dir . --target bigquery
+
+      - name: Findings report (real data)
+        if: steps.check.outputs.ready == 'true'
+        run: make bigquery-report
+
+      - name: Upload report, run results and docs
+        if: always() && steps.check.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: bigquery-run
+          path: |
+            docs/findings.md
+            dbt/target/run_results.json
+            dbt/target/manifest.json
+            dbt/target/catalog.json
+            dbt/target/index.html
